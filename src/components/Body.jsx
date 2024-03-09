@@ -35,8 +35,8 @@ function Body({ Children }) {
       // Add more iPhone models as needed
     ],
     samsung: [
-      { value: "galaxys21", label: "Galaxy S21" },
-      { value: "galaxynote20", label: "Galaxy Note 20" },
+      { value: "Galaxys 21", label: "Galaxy S21" },
+      { value: "Galaxynote20", label: "Galaxy Note 20" },
       // Add more Samsung models as needed
     ],
     // Add similar blocks for other brands as needed

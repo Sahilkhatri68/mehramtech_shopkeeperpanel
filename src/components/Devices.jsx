@@ -4,20 +4,26 @@ import axios from "axios";
 import { API } from "./API/API";
 
 function Devices() {
-  // code to get devices list which is requested for services
-  const getAllDevicesListByShopkeeper = async () => {
-    // axios.get(`${API}/`)
-  };
-  const [myValue, setMyValue] = useState("");
-
+  const [retrievedData, setRetrievedData] = useState();
+  // const [retrievedDeviceRequestDate, setRetrievedDeviceRequestDate] =
+  //   useState();
   useEffect(() => {
     // Retrieve the value from localStorage when the component mounts
     const storedValue = localStorage.getItem("shopkeeperId");
 
-    if (storedValue) {
-      // If a value exists in localStorage, set it in the state
-      setMyValue(storedValue);
-      // console.log(storedValue);
+    if (storedValue !== null || undefined) {
+      // code to get devices list which is requested for services
+      axios
+        .get(
+          `${API}/devicerequest/shopkeeper-requested-alldevices/${storedValue}`
+        )
+        .then((res) => {
+          console.log(res.data);
+          setRetrievedData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, []);
   return (
@@ -37,38 +43,75 @@ function Devices() {
                     <thead>
                       <tr className="bg-[#d8d8d8] border-b border-gray-200 text-xs leading-4 text-gray-700 uppercase font-bold tracking-wider">
                         <th className="px-6 py-3 text-left font-semibold">
-                          Shop Name
+                          Brand
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          Shopkeeper Name
+                          Model
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          Email
+                          IMEI
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          Phone No
+                          Problem
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          Id
+                          Resolve Status
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          Country
+                          Delivery Status
                         </th>
                         <th className="px-6 py-3 text-left font-semibold">
-                          State
-                        </th>
-                        <th className="px-6 py-3 text-left font-semibold">
-                          City
-                        </th>
-                        <th className="px-6 py-3 text-left font-semibold">
-                          Report
-                        </th>
-                        <th className="px-6 py-3 text-left font-semibold">
-                          Delete
+                          Date
                         </th>
                       </tr>
                     </thead>
-
+                    <tbody className="bg-white">
+                      {retrievedData &&
+                        retrievedData.map((i) => {
+                          return (
+                            <tr key={i._id}>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.brand}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="flex items-center">
+                                  {i.model}
+                                  <div className="ml-4">
+                                    <div className="text-sm leading-5 font-medium text-gray-900"></div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.imei}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.problem}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.issueresolveStatus}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.productdeliveryStatus}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                <div className="text-sm leading-5 text-gray-900">
+                                  {i.date}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
                     {/* BODY end */}
                   </table>
                 </div>

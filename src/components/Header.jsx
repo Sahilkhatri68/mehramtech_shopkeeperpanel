@@ -31,12 +31,13 @@ function Header({ Children }) {
         withCredentials: true,
       })
       .then((res) => {
+        console.log(res);
         if (res.data.token === true) {
           setHavetoken(true);
           localStorage.setItem("shopkeeperId", res.data.shopkeeperid);
           // sessionStorage.setItem("shopkeeperId", res.data.shopkeeperid);
         } else {
-          return navigate("/login");
+          navigate("/login");
         }
       })
       .catch((err) => {
@@ -56,15 +57,18 @@ function Header({ Children }) {
   // code for logout admin
   const HandleLogout = () => {
     axios
-      .post(`${API}/shopkeeperlogout`, {
+      .post(`${API}/shopkeeperlogin/shopkeeperLogout`, {
         withCredentials: true,
       })
       .then((res) => {
         console.log(res);
-        window.location.href = "/";
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("shopkeeperId");
+        window.location.href = "/login";
       })
       .catch((err) => {
         console.log(err);
+        window.location.href = "/login";
       });
   };
 
@@ -239,7 +243,7 @@ function Header({ Children }) {
 
         <DialogActions>
           <Button color="error" variant="contained" onClick={handleAlertClose}>
-            Disagree
+            No
           </Button>
           <Button
             color="success"
@@ -247,7 +251,7 @@ function Header({ Children }) {
             onClick={HandleLogout}
             autoFocus
           >
-            Agree
+            Yes
           </Button>
         </DialogActions>
       </Dialog>
