@@ -37,6 +37,7 @@ function Header({ Children }) {
           localStorage.setItem("shopkeeperId", res.data.shopkeeperid);
           // sessionStorage.setItem("shopkeeperId", res.data.shopkeeperid);
         } else {
+          localStorage.removeItem("shopkeeperId", res.data.shopkeeperid);
           navigate("/login");
         }
       })
