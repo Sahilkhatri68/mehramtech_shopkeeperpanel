@@ -29,13 +29,18 @@ function Header({ Children }) {
     axios
       .get(`${API}/shopkeeperlogin/check_have_token`, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": "X-Auth-Token",
+        },
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         if (res.data.token === true) {
           setHavetoken(true);
           localStorage.setItem("shopkeeperId", res.data.shopkeeperid);
-          // sessionStorage.setItem("shopkeeperId", res.data.shopkeeperid);
+          const authToken = res.headers["x-auth-token"];
+          // console.log("Requested Headers : ", authToken);
         } else {
           localStorage.removeItem("shopkeeperId", res.data.shopkeeperid);
           navigate("/login");

@@ -3,15 +3,16 @@ import Header from "./Header";
 import { useState } from "react";
 import axios from "axios";
 import { API } from "./API/API";
-// import { ToastContainer, toast } from "react-toastify";
 import { FaShop } from "react-icons/fa6";
 import { MdWork } from "react-icons/md";
 import { MdPlace } from "react-icons/md";
 import { BiWorld } from "react-icons/bi";
-
 import Select from "react-select";
+import io from "socket.io-client";
 
 function Body({ Children }) {
+  const [socket, setSocket] = useState(null);
+
   const [totalshops, setTotalshops] = useState(); //code to get total shops
 
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -19,6 +20,57 @@ function Body({ Children }) {
   const [selectproblem, setSelectproblem] = useState(null);
   const [imei, setImei] = useState("");
   const [productdeliveryStatus, setProductdeliveryStatus] = useState(null);
+
+  // websocket
+  // Initialize WebSocket connection
+  useEffect(() => {
+    const socket = io("http://localhost:4000", { transports: ["websocket"] });
+
+    socket.on("connect", () => {
+      console.log("Shopkeeper is connected with WebSocket server");
+      socket.emit("shopkeeper_message", "Shopkeeper is connected with admin");
+    });
+
+    socket.on("admin_message", (data) => {
+      console.log("Received message from admin:", data);
+    });
+
+    socket.on("notification", (message) => {
+      console.log("Received notification from admin:", message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from WebSocket server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from WebSocket server");
+    });
+
+    socket.on("notification", (message) => {
+      console.log("Received notification:", message);
+      // Handle the notification here
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("notification");
+    };
+  }, [socket]);
+
   const brandOptions = [
     { value: "apple", label: "Apple" },
     { value: "samsung", label: "Samsung" },
@@ -31,7 +83,7 @@ function Body({ Children }) {
       { value: "iphone11pro", label: "iPhone 11 Pro" },
       { value: "iphone11promax", label: "iPhone 11 Pro Max" },
       { value: "iphone12", label: "iPhone 12" },
-      // { value: "iphone12", label: "iPhone 12" },
+      { value: "iphone13", label: "iPhone 13" },
       // Add more iPhone models as needed
     ],
     samsung: [
@@ -117,16 +169,21 @@ function Body({ Children }) {
       productdeliveryStatus: productdeliveryStatus.value,
     };
 
-    console.log(requestData);
     // Make the HTTP request to the backend endpoint
     axios
       .post(`${API}/devicerequest`, requestData)
       .then((response) => {
         // Handle success, maybe show a success message
         console.log("Request submitted successfully", response.data);
-        if ((response.data.status = "success")) {
+        if (response.data.status === "success") {
           alert("Request Submitted");
-          window.location.href = "/";
+
+          // Clear form fields after successful submission
+          setSelectedBrand(null);
+          setSelectedModel(null);
+          setSelectproblem(null);
+          setImei("");
+          setProductdeliveryStatus(null);
         }
       })
       .catch((error) => {

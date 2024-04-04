@@ -21,11 +21,13 @@ function Login() {
         }
       )
       .then((res) => {
-        if ((res.data.status = 200)) {
+        if (res.data.status === "success") {
+          const token = res.data.token;
+          axios.defaults.headers.common["x-auth-token"] = token; //code to set token into headers
           alert(res.data.message);
           setTimeout(() => {
             navigate("/");
-          }, [1000]);
+          }, [1500]);
         }
       })
       .catch((err) => {
